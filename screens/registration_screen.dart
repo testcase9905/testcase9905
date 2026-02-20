@@ -12,7 +12,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
   final ApiService apiService = ApiService();
   bool isLoading = false;
   bool isPasswordVisible = false;
@@ -127,9 +127,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 child: isLoading
                     ? CircularProgressIndicator(color: Colors.white)
                     : Text(
-                        'Register',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                  'Register',
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
             ),
 
