@@ -15,26 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final ApiService apiService = ApiService();
   bool isLoading = false;
   bool isPasswordVisible = false;
-  List<dynamic> users = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchUsers(); // Demo data fetch
-  }
-
-  Future<void> fetchUsers() async {
-    try {
-      List<dynamic> fetchedUsers = await apiService.getUsers();
-      setState(() {
-        users = fetchedUsers;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching users: $e')),
-      );
-    }
-  }
 
   Future<void> handleLogin() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -57,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login Successful!')),
       );
-      // Navigate to home or show users data
+      // Navigate to show users data
       _showUsersDialog();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,32 +46,45 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _showUsersDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Users Data from API'),
-        content: Container(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(users[index].name),
-                subtitle: Text(users[index].email),
-              );
-            },
+  Future<void> _showUsersDialog() async {
+    try {
+      List<dynamic> users = await apiService.getUsers();
+      
+      if (!mounted) return;
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Registered Users'),
+          content: Container(
+            width: double.maxFinite,
+            child: users.isEmpty
+                ? Text('No registered users yet')
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(users[index].name),
+                        subtitle: Text(users[index].email),
+                      );
+                    },
+                  ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Close'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading users: $e')),
+      );
+    }
   }
 
   @override
@@ -202,9 +195,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: isLoading
                       ? CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          'Login',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                    'Login',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
 
