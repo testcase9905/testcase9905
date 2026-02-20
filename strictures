@@ -1,0 +1,11 @@
+lib/
+├── models/
+│   └── user_model.dart
+├── screens/
+│   ├── login_screen.dart
+│   └── registration_screen.dart
+├── services/
+│   └── api_service.dart
+├── widgets/
+│   └── custom_textfield.dart
+└── main.dart
